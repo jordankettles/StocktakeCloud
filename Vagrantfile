@@ -1,70 +1,106 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# All Vagrant configuration is done below. The "2" in Vagrant.configure
-# configures the configuration version (we support older styles for
-# backwards compatibility). Please don't change it unless you know what
-# you're doing.
+class Hash
+  def slice(*keep_keys)
+    h = {}
+    keep_keys.each { |key| h[key] = fetch(key) if has_key?(key) }
+    h
+  end unless Hash.method_defined?(:slice)
+  def except(*less_keys)
+    slice(*keys - less_keys)
+  end unless Hash.method_defined?(:except)
+end
+
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
 
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "base"
 
-  # Disable automatic box update checking. If you disable this, then
-  # boxes will only be checked for updates when the user runs
-  # `vagrant box outdated`. This is not recommended.
-  # config.vm.box_check_update = false
+  # If something is labeled 'Unique', then you should have modified it for your computer.
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  # NOTE: This will enable public access to the opened port
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine and only allow access
-  # via 127.0.0.1 to disable public access
-  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+  config.vm.box = "dummy"
 
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+  config.vm.define "webserver" do |webserver|
+    webserver.vm.hostname = "webserver"
+    webserver.vm.provider :aws do |webserver, override|
+      webserver.region = "us-east-1"
+      override.nfs.functional = false
+      override.vm.allowed_synced_folder_types = :rsync #TODO Learn how to use this properly.
+  
+      # AWS Configuration.
+      
+      webserver.keypair_name = "jk-cosc349-lab09" #Unique
+      override.ssh.private_key_path = "C:\\Users\\Jordan\\Downloads\\jk-cosc349-lab09.pem" #Unique
+  
+      # Instance type.
+  
+      webserver.instance_type = "t2.micro"
+  
+      # Availability Zone and subnet.
+      
+      webserver.availability_zone = "us-east-1a"
+      webserver.subnet_id = "subnet-ea1336b5"
+  
+      # Hard disk Image: xenial-64
+      webserver.ami = "ami-0133407e358cc1af0"
+      
+      # Security group.
+      webserver.security_groups = "sg-08d8dfe5f8adb992b" #Unique 
+      #TODO write up how to manually create this security group.
+  
+      # Override the ssh username becasue we are using Ubuntu.
+      override.ssh.username = "ubuntu"
+    end
+    webserver.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get install -y apache2 php libapache2-mod-php php-mysql
 
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
+      # cp /vagrant/client-website.conf /etc/apache2/sites-available/
+      # a2ensite client-website
+      # a2dissite 000-default
+      # service apache2 reload
+    SHELL
+  end
 
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
+  config.vm.define "webserverAdmin" do |webserverAdmin|
+    webserverAdmin.vm.hostname = "webserverAdmin"
+    webserverAdmin.vm.provider :aws do |webserverAdmin, override|
+      webserverAdmin.region = "us-east-1"
+      override.nfs.functional = false
+      override.vm.allowed_synced_folder_types = :rsync
+  
+      # AWS Configuration.
+  
+      webserverAdmin.keypair_name = "jk-cosc349-lab09" #Unique
+      override.ssh.private_key_path = "C:\\Users\\Jordan\\Downloads\\jk-cosc349-lab09.pem" #Unique
+  
+      # Instance type.
+  
+      webserverAdmin.instance_type = "t2.micro"
+  
+      # Availability Zone and subnet.
+      
+      webserverAdmin.availability_zone = "us-east-1a"
+      webserverAdmin.subnet_id = "subnet-ea1336b5"
+  
+      # Hard disk Image: xenial-64
+      webserverAdmin.ami = "ami-0133407e358cc1af0"
+      
+      # Security group.
+      webserverAdmin.security_groups = "sg-08d8dfe5f8adb992b" #Unique
+  
+      # Override the ssh username becasue we are using Ubuntu.
+      override.ssh.username = "ubuntu"
+    end
 
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
-  #
-  # View the documentation for the provider you are using for more
-  # information on available options.
+    webserverAdmin.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get install -y apache2 php libapache2-mod-php php-mysql
 
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
-  # documentation for more information about their specific syntax and use.
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   apt-get update
-  #   apt-get install -y apache2
-  # SHELL
+      # cp /vagrant/admin-website.conf /etc/apache2/sites-available/
+      # a2ensite admin-website
+      # a2dissite 000-default
+      # service apache2 reload
+    SHELL
+  end
 end
