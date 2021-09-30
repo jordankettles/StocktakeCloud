@@ -46,6 +46,9 @@ Vagrant.configure("2") do |config|
       
       # Security group.
       webserver.security_groups = ENV["SEC_GROUP"] #Unique #TODO write up how to manually create this security group.
+
+      # Elastic IP Address
+      webserver.elastic_ip = ENV["ELASTIC_IP_CLIENT"]
   
       # Override the ssh username becasue we are using Ubuntu.
       override.ssh.username = "ubuntu"
@@ -61,7 +64,7 @@ Vagrant.configure("2") do |config|
     SHELL
     
     # Print out the Elastic IP Address for easy copy-paste to browser.
-    puts "The IP address for Admin Web Server is x."
+    puts "The IP address for the Client Web Server is " + ENV["ELASTIC_IP_CLIENT"]
   end
 
   config.vm.define "webserverAdmin" do |webserverAdmin|
@@ -91,6 +94,9 @@ Vagrant.configure("2") do |config|
       
       # Security group.
       webserverAdmin.security_groups = ENV["SEC_GROUP"] #Unique 
+
+      # Elastic IP Address
+      webserverAdmin.elastic_ip = ENV["ELASTIC_IP_SERVER"]
   
       # Override the ssh username becasue we are using Ubuntu.
       override.ssh.username = "ubuntu"
@@ -106,6 +112,6 @@ Vagrant.configure("2") do |config|
       service apache2 reload
     SHELL
     # Print out the Elastic IP Address for easy copy-paste to browser.
-    puts "The IP address for Admin Web Server is x."
+    puts "The IP address for Admin Web Server is "  +  ENV["ELASTIC_IP_SERVER"]
   end
 end
