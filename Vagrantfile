@@ -29,8 +29,8 @@ Vagrant.configure("2") do |config|
   
       # AWS Configuration.
       
-      webserver.keypair_name = "jk-cosc349-lab09" #Unique
-      override.ssh.private_key_path = "C:\\Users\\Jordan\\Downloads\\jk-cosc349-lab09.pem" #Unique
+      webserver.keypair_name = ENV["KEYPAIR_NAME"] #Unique
+      override.ssh.private_key_path = ENV["PRIVATE_KEY_PATH"] #Unique
   
       # Instance type.
   
