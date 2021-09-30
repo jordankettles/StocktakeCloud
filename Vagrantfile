@@ -15,8 +15,7 @@ end
 Vagrant.configure("2") do |config|
 
 
-  # If something is labeled 'Unique', then you should have modified it for your computer.
-
+  # If something is labeled 'Unique', then you should have it set as a environment variable.
 
   config.vm.box = "dummy"
 
@@ -25,7 +24,8 @@ Vagrant.configure("2") do |config|
     webserver.vm.provider :aws do |webserver, override|
       webserver.region = "us-east-1"
       override.nfs.functional = false
-      override.vm.allowed_synced_folder_types = :rsync #TODO Learn how to use this properly.
+      override.vm.allowed_synced_folder_types = :rsync
+      override.vm.synced_folder "client", "/vagrant"
   
       # AWS Configuration.
       
@@ -45,8 +45,7 @@ Vagrant.configure("2") do |config|
       webserver.ami = "ami-0133407e358cc1af0"
       
       # Security group.
-      webserver.security_groups = "sg-08d8dfe5f8adb992b" #Unique 
-      #TODO write up how to manually create this security group.
+      webserver.security_groups = ENV["SEC_GROUP"] #Unique #TODO write up how to manually create this security group.
   
       # Override the ssh username becasue we are using Ubuntu.
       override.ssh.username = "ubuntu"
@@ -55,11 +54,14 @@ Vagrant.configure("2") do |config|
       apt-get update
       apt-get install -y apache2 php libapache2-mod-php php-mysql
 
-      # cp /vagrant/client-website.conf /etc/apache2/sites-available/
-      # a2ensite client-website
-      # a2dissite 000-default
-      # service apache2 reload
+      cp /vagrant/client-website.conf /etc/apache2/sites-available/
+      a2ensite client-website
+      a2dissite 000-default
+      service apache2 reload
     SHELL
+    
+    # Print out the Elastic IP Address for easy copy-paste to browser.
+    puts "The IP address for Admin Web Server is x."
   end
 
   config.vm.define "webserverAdmin" do |webserverAdmin|
@@ -68,11 +70,12 @@ Vagrant.configure("2") do |config|
       webserverAdmin.region = "us-east-1"
       override.nfs.functional = false
       override.vm.allowed_synced_folder_types = :rsync
+      override.vm.synced_folder "admin", "/vagrant"
   
       # AWS Configuration.
   
-      webserverAdmin.keypair_name = "jk-cosc349-lab09" #Unique
-      override.ssh.private_key_path = "C:\\Users\\Jordan\\Downloads\\jk-cosc349-lab09.pem" #Unique
+      webserverAdmin.keypair_name = ENV["KEYPAIR_NAME"] #Unique
+      override.ssh.private_key_path = ENV["PRIVATE_KEY_PATH"] #Unique
   
       # Instance type.
   
@@ -87,7 +90,7 @@ Vagrant.configure("2") do |config|
       webserverAdmin.ami = "ami-0133407e358cc1af0"
       
       # Security group.
-      webserverAdmin.security_groups = "sg-08d8dfe5f8adb992b" #Unique
+      webserverAdmin.security_groups = ENV["SEC_GROUP"] #Unique 
   
       # Override the ssh username becasue we are using Ubuntu.
       override.ssh.username = "ubuntu"
@@ -97,10 +100,12 @@ Vagrant.configure("2") do |config|
       apt-get update
       apt-get install -y apache2 php libapache2-mod-php php-mysql
 
-      # cp /vagrant/admin-website.conf /etc/apache2/sites-available/
-      # a2ensite admin-website
-      # a2dissite 000-default
-      # service apache2 reload
+      cp /vagrant/admin-website.conf /etc/apache2/sites-available/
+      a2ensite admin-website
+      a2dissite 000-default
+      service apache2 reload
     SHELL
+    # Print out the Elastic IP Address for easy copy-paste to browser.
+    puts "The IP address for Admin Web Server is x."
   end
 end
