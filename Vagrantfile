@@ -87,7 +87,7 @@ Vagrant.configure("2") do |config|
       # Availability Zone and subnet.
       
       webserverAdmin.availability_zone = "us-east-1a"
-      webserverAdmin.subnet_id = "subnet-ea1336b5"
+      webserverAdmin.subnet_id = ENV["SUBNET_ID"] # Unique
   
       # Hard disk Image: xenial-64
       webserverAdmin.ami = "ami-0133407e358cc1af0"

@@ -1,10 +1,10 @@
 <?php
 
     ## DB LOGIN
-    $db_host = '192.168.2.12';
-    $db_name = 'stocktake';
-    $db_user = 'admin';
-    $db_passwd = 'insecure_db_admin_pw';
+    $db_host   = '192.168.2.12'; # Change this to RDS instance endpoint.
+    $db_name   = 'stocktake';
+    $db_user   = 'admin';
+    $db_passwd = 'insecure_db_admin_pw'; # Change this too.
     $pdo_dsn = "mysql:host=$db_host;dbname=$db_name";
     $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 

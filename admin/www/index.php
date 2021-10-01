@@ -32,10 +32,10 @@
                         <tr><th>Product Name</th><th>Volume (ml)</th><th>Full Weight (g)</th><th>Empty Weight (g)</th><th>Desired Quantity</th></tr>
                         <?php
                             # DB LOGIN
-                            $db_host   = '192.168.2.12';
+                            $db_host   = '192.168.2.12'; # Change this to RDS instance endpoint.
                             $db_name   = 'stocktake';
                             $db_user   = 'admin';
-                            $db_passwd = 'insecure_db_admin_pw';
+                            $db_passwd = 'insecure_db_admin_pw'; # Change this too.
 
                             $pdo_dsn = "mysql:host=$db_host;dbname=$db_name";
 
@@ -140,10 +140,10 @@
                         <select name="product" id="name">
                             <?php
                                 ## DB LOGIN
-                                $db_host   = '192.168.2.12';
+                                $db_host   = '192.168.2.12'; # Change this to RDS instance endpoint.
                                 $db_name   = 'stocktake';
                                 $db_user   = 'admin';
-                                $db_passwd = 'insecure_db_admin_pw';
+                                $db_passwd = 'insecure_db_admin_pw'; # Change this too.
                                 $pdo_dsn = "mysql:host=$db_host;dbname=$db_name";
                                 $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 
@@ -174,10 +174,10 @@
 
             <?php
                 ## DB LOGIN
-                $db_host   = '192.168.2.12';
+                $db_host   = '192.168.2.12'; # Change this to RDS instance endpoint.
                 $db_name   = 'stocktake';
                 $db_user   = 'admin';
-                $db_passwd = 'insecure_db_admin_pw';
+                $db_passwd = 'insecure_db_admin_pw'; # Change this too.
                 $pdo_dsn = "mysql:host=$db_host;dbname=$db_name";
                 $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 
