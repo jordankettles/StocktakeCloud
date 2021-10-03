@@ -71,12 +71,15 @@
                     <p>Current Quantity</p>
                     <?php
                         ## DB LOGIN
-                        $db_host   = '192.168.2.12'; # Change this to RDS Instance Endpoint.
-                        $db_name   = 'stocktake';
-                        $db_user   = 'user';
-                        $db_passwd = 'insecure_db_pw'; # Change this too.
-                        $pdo_dsn = "mysql:host=$db_host;dbname=$db_name";
-                        $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
+                       # DB LOGIN
+                       $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
+                       $db_name   = 'stocktake';
+                       $db_user   = 'database1';
+                       $db_passwd = 'database-1'; # Change this too.
+
+                       $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
+
+                       $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 
                         # Loop through the tables displaying each item with current_count input as an option next to each
                         $tables = array("Spirits", "Wine", "Beer", "NonAlc");
@@ -105,11 +108,14 @@
                     <select name="product" id="converter">
                         <?php
                             ## DB LOGIN
-                            $db_host   = '192.168.2.12'; # Change this to RDS Instance Endpoint.
+                            # DB LOGIN
+                            $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
                             $db_name   = 'stocktake';
-                            $db_user   = 'user';
-                            $db_passwd = 'insecure_db_pw'; # Change this too.
-                            $pdo_dsn = "mysql:host=$db_host;dbname=$db_name";
+                            $db_user   = 'database1';
+                            $db_passwd = 'database-1'; # Change this too.
+
+                            $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
+
                             $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 
                             # Union spirits and wine as these are the only tables that can be used with the calculator 

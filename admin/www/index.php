@@ -32,12 +32,12 @@
                         <tr><th>Product Name</th><th>Volume (ml)</th><th>Full Weight (g)</th><th>Empty Weight (g)</th><th>Desired Quantity</th></tr>
                         <?php
                             # DB LOGIN
-                            $db_host   = '192.168.2.12'; # Change this to RDS instance endpoint.
+                            $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
                             $db_name   = 'stocktake';
-                            $db_user   = 'admin';
-                            $db_passwd = 'insecure_db_admin_pw'; # Change this too.
+                            $db_user   = 'database1';
+                            $db_passwd = 'database-1'; # Change this too.
 
-                            $pdo_dsn = "mysql:host=$db_host;dbname=$db_name";
+                            $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
 
                             $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
                             # Grab all records in Spirits table, Wine table, Beer table, and Non-Alcoholic table.
@@ -139,14 +139,15 @@
                     <fieldset id="delete_product">
                         <select name="product" id="name">
                             <?php
-                                ## DB LOGIN
-                                $db_host   = '192.168.2.12'; # Change this to RDS instance endpoint.
+                                # DB LOGIN
+                                $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
                                 $db_name   = 'stocktake';
-                                $db_user   = 'admin';
-                                $db_passwd = 'insecure_db_admin_pw'; # Change this too.
-                                $pdo_dsn = "mysql:host=$db_host;dbname=$db_name";
+                                $db_user   = 'database1';
+                                $db_passwd = 'database-1'; # Change this too.
+    
+                                $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
+    
                                 $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
-
                                 # Union all the tables selecting just name and desired_quantity 
                                 $sql = "SELECT name, desired_quantity FROM Spirits
                                 UNION SELECT name, desired_quantity FROM Wine
@@ -174,11 +175,13 @@
 
             <?php
                 ## DB LOGIN
-                $db_host   = '192.168.2.12'; # Change this to RDS instance endpoint.
+                $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
                 $db_name   = 'stocktake';
-                $db_user   = 'admin';
-                $db_passwd = 'insecure_db_admin_pw'; # Change this too.
-                $pdo_dsn = "mysql:host=$db_host;dbname=$db_name";
+                $db_user   = 'database1';
+                $db_passwd = 'database-1'; # Change this too.
+
+                $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
+
                 $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 
                 # Grab all the Stocktake reference records

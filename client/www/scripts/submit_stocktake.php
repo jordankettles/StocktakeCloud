@@ -1,11 +1,14 @@
 <?php
 
     ## DB LOGIN
-    $db_host = '192.168.2.12'; #Change this to RDS instance endpoint.
-    $db_name = 'stocktake';
-    $db_user = 'admin';
-    $db_passwd = 'insecure_db_admin_pw'; # Change this too.
-    $pdo_dsn = "mysql:host=$db_host;dbname=$db_name";
+    # DB LOGIN
+    $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
+    $db_name   = 'stocktake';
+    $db_user   = 'database1';
+    $db_passwd = 'database-1'; # Change this too.
+
+    $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
+
     $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 
     # Returns true if the table is empty

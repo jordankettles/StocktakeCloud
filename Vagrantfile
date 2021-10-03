@@ -39,7 +39,7 @@ Vagrant.configure("2") do |config|
       # Availability Zone and subnet.
       
       webserver.availability_zone = "us-east-1a"
-      webserver.subnet_id = "subnet-ea1336b5"
+      webserver.subnet_id = ENV["SUBNET_ID_CLIENT"]
   
       # Hard disk Image: xenial-64
       webserver.ami = "ami-0133407e358cc1af0"
@@ -87,7 +87,7 @@ Vagrant.configure("2") do |config|
       # Availability Zone and subnet.
       
       webserverAdmin.availability_zone = "us-east-1a"
-      webserverAdmin.subnet_id = ENV["SUBNET_ID"] # Unique
+      webserverAdmin.subnet_id = ENV["SUBNET_ID_ADMIN"] # Unique
   
       # Hard disk Image: xenial-64
       webserverAdmin.ami = "ami-0133407e358cc1af0"
@@ -104,12 +104,17 @@ Vagrant.configure("2") do |config|
 
     webserverAdmin.vm.provision "shell", inline: <<-SHELL
       apt-get update
-      apt-get install -y apache2 php libapache2-mod-php php-mysql
+      apt-get install -y apache2 php libapache2-mod-php php-mysql mysql-client
 
       cp /vagrant/admin-website.conf /etc/apache2/sites-available/
       a2ensite admin-website
       a2dissite 000-default
       service apache2 reload
+
+      # Setup database
+      # touch ~/.my.cnf
+      # mysql -h database-1.crx8snaug9em.us-east-1.rds.amazonaws.com -P 3306 -u database1
+
     SHELL
     # Print out the Elastic IP Address for easy copy-paste to browser.
     puts "The IP address for Admin Web Server is "  +  ENV["ELASTIC_IP_SERVER"]
