@@ -1,7 +1,7 @@
 :: Run this script from powershell instead of running vagrant in Windows.
-:: To run vagrant up, type .\vagrant.bat up
-:: To run vagrant status, type .\vagrant.bat status
-:: To run vagrant destroy, type .\vagrant.bat destroy
+:: To run vagrant up, type .\vg.bat up
+:: To run vagrant status, type .\vg.bat status
+:: To run vagrant destroy, type .\vg.bat destroy
 :: Need to fill out the value fields with your own values.
 :: Make sure that your AWS credentials have not expired if you have a problem.
 
