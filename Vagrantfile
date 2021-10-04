@@ -62,27 +62,9 @@ Vagrant.configure("2") do |config|
     dbserver.vm.provision "shell", inline: <<-SHELL
       apt-get update
       
-      # Set the root password
-      export MYSQL_PWD='insecure_mysqlroot_pw'
-      echo "mysql-server mysql-server/root_password password $MYSQL_PWD" | debconf-set-selections 
-      echo "mysql-server mysql-server/root_password_again password $MYSQL_PWD" | debconf-set-selections
-      apt-get -y install mysql-server
-      echo "CREATE DATABASE stocktake;" | mysql
-
-      # Create a user and grant privileges 
-      echo "CREATE USER 'user'@'%' IDENTIFIED BY 'insecure_db_pw';" | mysql
-      echo "GRANT ALL PRIVILEGES ON stocktake.* TO 'user'@'%'" | mysql
-
-      # Create a super user and grant privileges 
-      echo "CREATE USER 'admin'@'%' IDENTIFIED BY 'insecure_db_admin_pw';" | mysql
-      echo "GRANT ALL PRIVILEGES ON stocktake.* TO 'admin'@'%'" | mysql
-
-      export MYSQL_PWD='insecure_db_pw'
-      cat /vagrant/setup-database.sql | mysql -u user stocktake
-      cat /vagrant/demo-values.sql | mysql -u user stocktake # DEMO VALUES 
-
-      sed -i'' -e '/bind-address/s/127.0.0.1/0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
-      service mysql restart
+      apt-get -y install mysql-client
+     
+      # service mysql restart
     SHELL
   end
 end

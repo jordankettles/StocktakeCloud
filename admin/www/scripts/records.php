@@ -1,3 +1,14 @@
+<?php 
+session_start();
+        
+    // Check if the user is logged in, otherwise redirect to login page
+    if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+        header("location: signing/login.php");
+        exit;
+    }
+
+    require_once('../config.php');
+?>
 <!DOCTYPE HTML>
 <html lang="en">
     <head>
@@ -8,19 +19,11 @@
     <body>
         <?php
 
-            ## DB LOGIN
-            $db_host = '192.168.2.12';
-            $db_name = 'stocktake';
-            $db_user = 'admin';
-            $db_passwd = 'insecure_db_admin_pw';
-            $pdo_dsn = "mysql:host=$db_host;dbname=$db_name";
-            $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
-
             # Get the id of the stocktake instance selected from the POST button from HTML 
             $stock_num = $_REQUEST['id'];
 
             # Select the products and display them
-            $q = $pdo->query("SELECT * FROM StocktakeProds WHERE stocktake_num=$stock_num");
+            $q = $pdo->query("SELECT * FROM StocktakeProds WHERE stocktake_num=$stock_num AND adminID=" . $_SESSION['id']);
             
             echo "<h1>Stocktake Record #$stock_num</h1>\n
                     <table id='record'>\n

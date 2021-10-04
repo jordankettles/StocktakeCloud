@@ -47,10 +47,10 @@
                         <?php
  
                             # Grab all records in Spirits table, Wine table, Beer table, and Non-Alcoholic table.
-                            $q_Spirits = $pdo->query("SELECT * FROM Spirits");
-                            $q_Wine = $pdo->query("SELECT * FROM Wine");
-                            $q_Beer = $pdo->query("SELECT * FROM Beer");
-                            $q_NonAlc = $pdo->query("SELECT * FROM NonAlc");
+                            $q_Spirits = $pdo->query("SELECT * FROM Spirits WHERE adminID=" . $_SESSION['id']);
+                            $q_Wine = $pdo->query("SELECT * FROM Wine WHERE adminID=" . $_SESSION['id']);
+                            $q_Beer = $pdo->query("SELECT * FROM Beer WHERE adminID=" . $_SESSION['id']);
+                            $q_NonAlc = $pdo->query("SELECT * FROM NonAlc WHERE adminID=" . $_SESSION['id']);
 
                             # Displays Spirits
                             while($row = $q_Spirits->fetch()){
@@ -146,10 +146,10 @@
                         <select name="product" id="name">
                             <?php
  
-                                $sql = "SELECT name, desired_quantity FROM Spirits
-                                UNION SELECT name, desired_quantity FROM Wine
-                                UNION SELECT name, desired_quantity FROM Beer
-                                UNION SELECT name, desired_quantity FROM NonAlc";
+                                $sql = "SELECT name, desired_quantity FROM Spirits WHERE adminID=" . $_SESSION['id']
+                                . " UNION SELECT name, desired_quantity FROM Wine WHERE adminID=" . $_SESSION['id']
+                                . " UNION SELECT name, desired_quantity FROM Beer WHERE adminID=" . $_SESSION['id']
+                                . " UNION SELECT name, desired_quantity FROM NonAlc WHERE adminID=" . $_SESSION['id'];
                                 $q = $pdo->query($sql);
 
                                 # Display the records which can be selected 
@@ -172,7 +172,7 @@
 
             <?php
 
-                $q = $pdo->query("SELECT * FROM StocktakeRefs");
+                $q = $pdo->query("SELECT * FROM StocktakeRefs WHERE adminID=" . $_SESSION['id']);
 
                 # Display each record
                 while($row = $q->fetch()){
@@ -182,6 +182,44 @@
                 echo $row['stock_num'];
                 echo '<td><a href="scripts/records.php?id='.$row['stock_num'].'"><input type="submit" name="submit" 
                 value="Open" class="Register" /></a></td>';
+                }
+            ?>
+        </table>
+
+        <!-- Maybe change to an alert? -->
+        <h2>Users requesting table access</h2>
+        <table id="clientRequests">
+            <tr><th>Client Username</th><th>Allow Access</th></tr>
+
+            <?php 
+                $q = $pdo->query("SELECT * FROM ClientRequests WHERE adminID=" . $_SESSION['id']);
+                while ($row = $q->fetch()) {
+                    echo '<tr><td>';
+                    echo $row['clientUsername'];
+                    echo '<td><a href="scripts/allow_access.php?id='.$row['clientID'].'"><input type="submit" name="submit"
+                    value="Allow" class="Register" /></a></td>';
+                }
+            ?>
+        </table>
+
+        <h2>Allowed clients</h2>
+        <table id="clientRequests">
+            <tr><th>Client Username</th><th>Allow Access</th></tr>
+
+            <?php 
+                $q = $pdo->query("SELECT * FROM ClientTableAccess WHERE adminID=" . $_SESSION['id']);
+                $clients = array();
+
+                while ($row = $q->fetch()) {
+                    $clients[$row['clientID']] = $pdo->query("SELECT * FROM ClientUsers WHERE id=" . $row['clientID'])->fetch()['username'];
+                }
+                $q = $pdo->query("SELECT * FROM ClientTableAccess WHERE adminID=" . $_SESSION['id']);
+
+                while ($row = $q->fetch()) {
+                    echo '<tr><td>';
+                    echo $clients[$row['clientID']];
+                    echo '<td><a href="scripts/remove_access.php?id='.$row['clientID'].'"><input type="submit" name="submit"
+                    value="Remove" class="Register" /></a></td>';
                 }
             ?>
         </table>
