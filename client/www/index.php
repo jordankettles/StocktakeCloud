@@ -1,3 +1,17 @@
+<?php
+    // Initialize the session
+    session_start();
+    
+    // Check if the user is logged in, otherwise redirect to login page
+    if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+        header("location: signing/login.php");
+        exit;
+    }
+    // Include config file
+    require_once "config.php";
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -70,17 +84,7 @@
                     <p>Desired Quantity</p>
                     <p>Current Quantity</p>
                     <?php
-                        ## DB LOGIN
-                       # DB LOGIN
-                       $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-                       $db_name   = 'stocktake';
-                       $db_user   = 'database1';
-                       $db_passwd = 'database-1'; # Change this too.
-
-                       $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-
-                       $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
-
+ 
                         # Loop through the tables displaying each item with current_count input as an option next to each
                         $tables = array("Spirits", "Wine", "Beer", "NonAlc");
                         foreach($tables as $table) {
@@ -107,16 +111,6 @@
                 <fieldset id="calculator">
                     <select name="product" id="converter">
                         <?php
-                            ## DB LOGIN
-                            # DB LOGIN
-                            $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-                            $db_name   = 'stocktake';
-                            $db_user   = 'database1';
-                            $db_passwd = 'database-1'; # Change this too.
-
-                            $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-
-                            $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 
                             # Union spirits and wine as these are the only tables that can be used with the calculator 
                             $sql = "SELECT * FROM Spirits UNION SELECT * FROM Wine";
@@ -140,5 +134,13 @@
                 </fieldset>
             </form>
         </section>
+        <div>
+        <section>
+            <h2>Logout</h2>
+            <form action="signing/logout.php">
+                <input type="submit" value="Logout"/>
+            </form>
+        </section>
+        </div>
     </body>
 </html>

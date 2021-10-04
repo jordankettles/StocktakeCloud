@@ -1,3 +1,17 @@
+<?php
+    // Initialize the session
+    session_start();
+    
+    // Check if the user is logged in, otherwise redirect to login page
+    if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+        header("location: signing/login.php");
+        exit;
+    }
+
+    require_once('config.php');
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -31,15 +45,7 @@
                     <table>
                         <tr><th>Product Name</th><th>Volume (ml)</th><th>Full Weight (g)</th><th>Empty Weight (g)</th><th>Desired Quantity</th></tr>
                         <?php
-                            # DB LOGIN
-                            $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-                            $db_name   = 'stocktake';
-                            $db_user   = 'database1';
-                            $db_passwd = 'database-1'; # Change this too.
-
-                            $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-
-                            $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
+ 
                             # Grab all records in Spirits table, Wine table, Beer table, and Non-Alcoholic table.
                             $q_Spirits = $pdo->query("SELECT * FROM Spirits");
                             $q_Wine = $pdo->query("SELECT * FROM Wine");
@@ -139,16 +145,7 @@
                     <fieldset id="delete_product">
                         <select name="product" id="name">
                             <?php
-                                # DB LOGIN
-                                $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-                                $db_name   = 'stocktake';
-                                $db_user   = 'database1';
-                                $db_passwd = 'database-1'; # Change this too.
-    
-                                $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-    
-                                $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
-                                # Union all the tables selecting just name and desired_quantity 
+ 
                                 $sql = "SELECT name, desired_quantity FROM Spirits
                                 UNION SELECT name, desired_quantity FROM Wine
                                 UNION SELECT name, desired_quantity FROM Beer
@@ -174,17 +171,7 @@
             <tr><th>Date</th><th>Stocktake ID #</th><th>Go to Stocktake</th></tr>
 
             <?php
-                ## DB LOGIN
-                $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-                $db_name   = 'stocktake';
-                $db_user   = 'database1';
-                $db_passwd = 'database-1'; # Change this too.
 
-                $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-
-                $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
-
-                # Grab all the Stocktake reference records
                 $q = $pdo->query("SELECT * FROM StocktakeRefs");
 
                 # Display each record
@@ -198,5 +185,13 @@
                 }
             ?>
         </table>
+
+        <section>
+            <h2>Logout</h2>
+            <form action="signing/logout.php">
+                <input type="submit" value="Logout"/>
+            </form>
+        </section>
+
     </body>
 </html>
