@@ -39,7 +39,7 @@ Vagrant.configure("2") do |config|
       # Availability Zone and subnet.
       
       webserver.availability_zone = "us-east-1a"
-      webserver.subnet_id = ENV["SUBNET_ID_CLIENT"]
+      webserver.subnet_id = ENV["SUBNET_ID_CLIENT"] #Unique 
   
       # Hard disk Image: xenial-64
       webserver.ami = "ami-0133407e358cc1af0"
@@ -48,7 +48,8 @@ Vagrant.configure("2") do |config|
       webserver.security_groups = ENV["SEC_GROUP"] #Unique #TODO write up how to manually create this security group.
 
       # Elastic IP Address
-      webserver.elastic_ip = ENV["ELASTIC_IP_CLIENT"]
+      # This is optional, it can be commented out if you don't want to use Elastic IP Addresses.
+      webserver.elastic_ip = ENV["ELASTIC_IP_CLIENT"] #Unique 
   
       # Override the ssh username becasue we are using Ubuntu.
       override.ssh.username = "ubuntu"
@@ -96,7 +97,8 @@ Vagrant.configure("2") do |config|
       webserverAdmin.security_groups = ENV["SEC_GROUP"] #Unique 
 
       # Elastic IP Address
-      webserverAdmin.elastic_ip = ENV["ELASTIC_IP_SERVER"]
+      # This is optional, it can be commented out if you don't want to use Elastic IP Addresses.
+      webserverAdmin.elastic_ip = ENV["ELASTIC_IP_SERVER"] #Unique 
   
       # Override the ssh username becasue we are using Ubuntu.
       override.ssh.username = "ubuntu"
