@@ -1,4 +1,7 @@
-:: Run this script from powershell instead of running vagrant up in Windows.
+:: Run this script from powershell instead of running vagrant in Windows.
+:: To run vagrant up, type .\vagrant.bat up
+:: To run vagrant status, type .\vagrant.bat status
+:: To run vagrant destroy, type .\vagrant.bat destroy
 :: Need to fill out the value fields with your own values.
 :: Make sure that your AWS credentials have not expired if you have a problem.
 
@@ -37,4 +40,4 @@ set SEC_GROUP=blank
 
 set SUBNET_ID=blank
 
-vagrant up
+vagrant %1
