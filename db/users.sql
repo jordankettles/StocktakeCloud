@@ -1,0 +1,39 @@
+CREATE TABLE ClientUsers (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE AdminUsers (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ClientRequests (
+    clientUsername VARCHAR(50) NOT NULL UNIQUE,
+    clientID INT NOT NULL UNIQUE,
+    adminUsername VARCHAR(50) NOT NULL,
+    adminID INT NOT NULL,
+    FOREIGN KEY (clientID)
+        REFERENCES ClientUsers(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (adminID)
+        REFERENCES AdminUsers(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    PRIMARY KEY (clientID, adminID)
+);
+
+CREATE TABLE ClientTableAccess (
+    clientID INT NOT NULL UNIQUE,
+    adminID INT NOT NULL,
+    FOREIGN KEY (clientID)
+        REFERENCES ClientUsers(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (adminID)
+        REFERENCES AdminUsers(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    PRIMARY KEY (clientID, adminID)
+);

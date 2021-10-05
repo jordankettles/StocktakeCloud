@@ -1,14 +1,13 @@
 <?php
+    session_start();
+        
+    // Check if the user is logged in, otherwise redirect to login page
+    if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+        header("location: signing/login.php");
+        exit;
+    }
 
-    ## DB LOGIN
-    $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-    $db_name   = 'stocktake';
-    $db_user   = 'database1';
-    $db_passwd = 'database-1'; # Change this too.
-
-    $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-
-    $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
+    require_once('../config.php');
 
     ## Must have these
     $product_name = $_REQUEST['name'];
@@ -21,20 +20,20 @@
     $product_emptyWeight = $_REQUEST['empty_weight'];
 
     # First insert record into the respective table with the must have values
-    $sql = "INSERT INTO $product_category (name, desired_quantity) VALUES ('$product_name', $desired_quantity)";
+    $sql = "INSERT INTO $product_category (name, desired_quantity, adminID) VALUES ('$product_name', $desired_quantity," . $_SESSION['id'] .")";
     $pdo->exec($sql);
 
     # Then check for the optional values existing, if so update the record created in the previous step
     if (!empty($product_volume)) { 
-        $sql = "UPDATE $product_category SET volume=$product_volume WHERE name='$product_name'";
+        $sql = "UPDATE $product_category SET volume=$product_volume WHERE name='$product_name' AND adminID=" . $_SESSION['id'];
         $pdo->exec($sql);
     }
     if (!empty($product_fullWeight)) {
-        $sql = "UPDATE $product_category SET full_weight=$product_fullWeight WHERE name='$product_name'";
+        $sql = "UPDATE $product_category SET full_weight=$product_fullWeight WHERE name='$product_name' AND adminID=" . $_SESSION['id'];
         $pdo->exec($sql);
     }
     if (!empty($product_emptyWeight)) {
-        $sql = "UPDATE $product_category SET empty_weight=$product_emptyWeight WHERE name='$product_name'";
+        $sql = "UPDATE $product_category SET empty_weight=$product_emptyWeight WHERE name='$product_name' AND adminID=" . $_SESSION['id'];
         $pdo->exec($sql);
     }
 

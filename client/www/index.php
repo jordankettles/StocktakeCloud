@@ -1,3 +1,17 @@
+<?php
+    // Initialize the session
+    session_start();
+    
+    // Check if the user is logged in, otherwise redirect to login page
+    if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+        header("location: signing/login.php");
+        exit;
+    }
+    // Include config file
+    require_once "config.php";
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -70,29 +84,22 @@
                     <p>Desired Quantity</p>
                     <p>Current Quantity</p>
                     <?php
-                        ## DB LOGIN
-                       # DB LOGIN
-                       $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-                       $db_name   = 'stocktake';
-                       $db_user   = 'database1';
-                       $db_passwd = 'database-1'; # Change this too.
-
-                       $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-
-                       $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
-
+                        # Table access
+                        $adminID = $pdo->query("SELECT * FROM ClientTableAccess WHERE clientID=" . $_SESSION['id'])->fetch()['adminID'];
                         # Loop through the tables displaying each item with current_count input as an option next to each
-                        $tables = array("Spirits", "Wine", "Beer", "NonAlc");
-                        foreach($tables as $table) {
-                            $sql = "SELECT * FROM $table";
-                            $q = $pdo->query($sql);
-                            while($row = $q->fetch()){
-                                echo "<p>" . $row["name"] . "</p>\n
-                                    <p>" . $row["desired_quantity"] . "</p>\n";
-                                if ($table == "Spirits" || $table == "Wine") {
-                                    echo "<input type='number' min='0' max='1000' name=" . $table ."[" . $row['id'] . "] step='any' placeholder='(0.0-1000.0)'' required>\n";
-                                } else {
-                                    echo "<input type='number' min='0' max='1000' name=" . $table ."[" . $row['id'] . "] step='any' placeholder='(0-1000)'' required>\n";
+                        if (!empty($adminID)) {
+                            $tables = array("Spirits", "Wine", "Beer", "NonAlc");
+                            foreach($tables as $table) {
+                                $sql = "SELECT * FROM $table WHERE adminID=$adminID";
+                                $q = $pdo->query($sql);
+                                while($row = $q->fetch()){
+                                    echo "<p>" . $row["name"] . "</p>\n
+                                        <p>" . $row["desired_quantity"] . "</p>\n";
+                                    if ($table == "Spirits" || $table == "Wine") {
+                                        echo "<input type='number' min='0' max='1000' name=" . $table ."[" . $row['id'] . "] step='any' placeholder='(0.0-1000.0)'' required>\n";
+                                    } else {
+                                        echo "<input type='number' min='0' max='1000' name=" . $table ."[" . $row['id'] . "] step='any' placeholder='(0-1000)'' required>\n";
+                                    }
                                 }
                             }
                         }
@@ -107,28 +114,21 @@
                 <fieldset id="calculator">
                     <select name="product" id="converter">
                         <?php
-                            ## DB LOGIN
-                            # DB LOGIN
-                            $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-                            $db_name   = 'stocktake';
-                            $db_user   = 'database1';
-                            $db_passwd = 'database-1'; # Change this too.
-
-                            $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-
-                            $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
-
+                            # Table access
+                            $adminID = $pdo->query("SELECT * FROM ClientTableAccess WHERE clientID=" . $_SESSION['id'])->fetch()['adminID'];
                             # Union spirits and wine as these are the only tables that can be used with the calculator 
-                            $sql = "SELECT * FROM Spirits UNION SELECT * FROM Wine";
-                            $q = $pdo->query($sql);
+                            if (!empty($adminID)) {
+                                $sql = "SELECT * FROM Spirits WHERE adminID=$adminID UNION SELECT * FROM Wine WHERE adminID=$adminID";
+                                $q = $pdo->query($sql);
 
-                            while ($row = $q->fetch()) {
-                                if ($row['empty_weight'] != NULL && $row['full_weight'] != NULL) {
-                                    echo "<option value='" . 
-                                                            $row['empty_weight'] . " " .
-                                                            $row['full_weight'] . " " .
-                                                            $row['volume'] . 
-                                        "'>" . $row['name'] . "</option>\n";
+                                while ($row = $q->fetch()) {
+                                    if ($row['empty_weight'] != NULL && $row['full_weight'] != NULL) {
+                                        echo "<option value='" . 
+                                                                $row['empty_weight'] . " " .
+                                                                $row['full_weight'] . " " .
+                                                                $row['volume'] . 
+                                            "'>" . $row['name'] . "</option>\n";
+                                    }
                                 }
                             }
                         ?>
@@ -138,6 +138,22 @@
                     <input type="submit" value="Calculate!">
                     <p id="vol_calc"></p>
                 </fieldset>
+            </form>
+        </section>
+        <section>
+            <h2>Submit access to table</h2>
+            <form method="post" enctype="aplication/x-www-form-urlencoded" action="scripts/table_request.php">
+                <fieldset id="tableRequest">
+                    <label for="adminUsername">Admin Username: </label>
+                    <input type="text" id="adminUsername" name="adminUsername">
+                    <input type="submit" value="Submit">
+                </fieldset>
+            </form>
+        </section>
+        <section>
+            <h2>Logout</h2>
+            <form action="signing/logout.php">
+                <input type="submit" value="Logout"/>
             </form>
         </section>
     </body>

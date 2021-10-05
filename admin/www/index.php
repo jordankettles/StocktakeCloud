@@ -1,3 +1,17 @@
+<?php
+    // Initialize the session
+    session_start();
+    
+    // Check if the user is logged in, otherwise redirect to login page
+    if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+        header("location: signing/login.php");
+        exit;
+    }
+
+    require_once('config.php');
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -31,20 +45,12 @@
                     <table>
                         <tr><th>Product Name</th><th>Volume (ml)</th><th>Full Weight (g)</th><th>Empty Weight (g)</th><th>Desired Quantity</th></tr>
                         <?php
-                            # DB LOGIN
-                            $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-                            $db_name   = 'stocktake';
-                            $db_user   = 'database1';
-                            $db_passwd = 'database-1'; # Change this too.
-
-                            $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-
-                            $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
+ 
                             # Grab all records in Spirits table, Wine table, Beer table, and Non-Alcoholic table.
-                            $q_Spirits = $pdo->query("SELECT * FROM Spirits");
-                            $q_Wine = $pdo->query("SELECT * FROM Wine");
-                            $q_Beer = $pdo->query("SELECT * FROM Beer");
-                            $q_NonAlc = $pdo->query("SELECT * FROM NonAlc");
+                            $q_Spirits = $pdo->query("SELECT * FROM Spirits WHERE adminID=" . $_SESSION['id']);
+                            $q_Wine = $pdo->query("SELECT * FROM Wine WHERE adminID=" . $_SESSION['id']);
+                            $q_Beer = $pdo->query("SELECT * FROM Beer WHERE adminID=" . $_SESSION['id']);
+                            $q_NonAlc = $pdo->query("SELECT * FROM NonAlc WHERE adminID=" . $_SESSION['id']);
 
                             # Displays Spirits
                             while($row = $q_Spirits->fetch()){
@@ -139,20 +145,11 @@
                     <fieldset id="delete_product">
                         <select name="product" id="name">
                             <?php
-                                # DB LOGIN
-                                $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-                                $db_name   = 'stocktake';
-                                $db_user   = 'database1';
-                                $db_passwd = 'database-1'; # Change this too.
-    
-                                $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-    
-                                $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
-                                # Union all the tables selecting just name and desired_quantity 
-                                $sql = "SELECT name, desired_quantity FROM Spirits
-                                UNION SELECT name, desired_quantity FROM Wine
-                                UNION SELECT name, desired_quantity FROM Beer
-                                UNION SELECT name, desired_quantity FROM NonAlc";
+ 
+                                $sql = "SELECT name, desired_quantity FROM Spirits WHERE adminID=" . $_SESSION['id']
+                                . " UNION SELECT name, desired_quantity FROM Wine WHERE adminID=" . $_SESSION['id']
+                                . " UNION SELECT name, desired_quantity FROM Beer WHERE adminID=" . $_SESSION['id']
+                                . " UNION SELECT name, desired_quantity FROM NonAlc WHERE adminID=" . $_SESSION['id'];
                                 $q = $pdo->query($sql);
 
                                 # Display the records which can be selected 
@@ -174,18 +171,8 @@
             <tr><th>Date</th><th>Stocktake ID #</th><th>Go to Stocktake</th></tr>
 
             <?php
-                ## DB LOGIN
-                $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-                $db_name   = 'stocktake';
-                $db_user   = 'database1';
-                $db_passwd = 'database-1'; # Change this too.
 
-                $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-
-                $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
-
-                # Grab all the Stocktake reference records
-                $q = $pdo->query("SELECT * FROM StocktakeRefs");
+                $q = $pdo->query("SELECT * FROM StocktakeRefs WHERE adminID=" . $_SESSION['id']);
 
                 # Display each record
                 while($row = $q->fetch()){
@@ -198,5 +185,51 @@
                 }
             ?>
         </table>
+
+        <!-- Maybe change to an alert? -->
+        <h2>Users requesting table access</h2>
+        <table id="clientRequests">
+            <tr><th>Client Username</th><th>Allow Access</th></tr>
+
+            <?php 
+                $q = $pdo->query("SELECT * FROM ClientRequests WHERE adminID=" . $_SESSION['id']);
+                while ($row = $q->fetch()) {
+                    echo '<tr><td>';
+                    echo $row['clientUsername'];
+                    echo '<td><a href="scripts/allow_access.php?id='.$row['clientID'].'"><input type="submit" name="submit"
+                    value="Allow" class="Register" /></a></td>';
+                }
+            ?>
+        </table>
+
+        <h2>Allowed clients</h2>
+        <table id="clientRequests">
+            <tr><th>Client Username</th><th>Allow Access</th></tr>
+
+            <?php 
+                $q = $pdo->query("SELECT * FROM ClientTableAccess WHERE adminID=" . $_SESSION['id']);
+                $clients = array();
+
+                while ($row = $q->fetch()) {
+                    $clients[$row['clientID']] = $pdo->query("SELECT * FROM ClientUsers WHERE id=" . $row['clientID'])->fetch()['username'];
+                }
+                $q = $pdo->query("SELECT * FROM ClientTableAccess WHERE adminID=" . $_SESSION['id']);
+
+                while ($row = $q->fetch()) {
+                    echo '<tr><td>';
+                    echo $clients[$row['clientID']];
+                    echo '<td><a href="scripts/remove_access.php?id='.$row['clientID'].'"><input type="submit" name="submit"
+                    value="Remove" class="Register" /></a></td>';
+                }
+            ?>
+        </table>
+
+        <section>
+            <h2>Logout</h2>
+            <form action="signing/logout.php">
+                <input type="submit" value="Logout"/>
+            </form>
+        </section>
+
     </body>
 </html>

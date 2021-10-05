@@ -1,3 +1,14 @@
+<?php 
+session_start();
+        
+    // Check if the user is logged in, otherwise redirect to login page
+    if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+        header("location: signing/login.php");
+        exit;
+    }
+
+    require_once('../config.php');
+?>
 <!DOCTYPE HTML>
 <html lang="en">
     <head>
@@ -8,21 +19,11 @@
     <body>
         <?php
 
-            ## DB LOGIN
-            $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-            $db_name   = 'stocktake';
-            $db_user   = 'database1';
-            $db_passwd = 'database-1'; # Change this too.
-
-            $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-
-            $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
-
             # Get the id of the stocktake instance selected from the POST button from HTML 
             $stock_num = $_REQUEST['id'];
 
             # Select the products and display them
-            $q = $pdo->query("SELECT * FROM StocktakeProds WHERE stocktake_num=$stock_num");
+            $q = $pdo->query("SELECT * FROM StocktakeProds WHERE stocktake_num=$stock_num AND adminID=" . $_SESSION['id']);
             
             echo "<h1>Stocktake Record #$stock_num</h1>\n
                     <table id='record'>\n

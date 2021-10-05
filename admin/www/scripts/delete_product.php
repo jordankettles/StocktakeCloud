@@ -1,14 +1,14 @@
 <?php
 
-    ## DB LOGIN
-    $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
-    $db_name   = 'stocktake';
-    $db_user   = 'database1';
-    $db_passwd = 'database-1'; # Change this too.
+    session_start();
+        
+    // Check if the user is logged in, otherwise redirect to login page
+    if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+        header("location: signing/login.php");
+        exit;
+    }
 
-    $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
-
-    $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
+    require_once('../config.php');
 
     # Get the product to be deleted from the HTML POST
     $product_to_delete = explode('|', $_REQUEST['product']);
@@ -22,7 +22,7 @@
     # they will all be deleted.
     $tables = array("Spirits", "Wine", "Beer", "NonAlc"); # Tables in the database
     foreach($tables as $table) { 
-        $query = "DELETE FROM $table WHERE name='$product_name' AND desired_quantity=$desired_quantity";
+        $query = "DELETE FROM $table WHERE name='$product_name' AND desired_quantity=$desired_quantity AND adminID=" . $_SESSION['id'];
         $pdo->exec($query);
     }
 
