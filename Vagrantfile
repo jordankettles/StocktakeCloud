@@ -54,14 +54,25 @@ Vagrant.configure("2") do |config|
       # Override the ssh username becasue we are using Ubuntu.
       override.ssh.username = "ubuntu"
     end
-    webserver.vm.provision "shell", inline: <<-SHELL
+    webserver.vm.provision "shell", env: {AWS_ACCESS_KEY_ID:ENV['AWS_ACCESS_KEY_ID'], AWS_SECRET_ACCESS_KEY:ENV['AWS_SECRET_ACCESS_KEY'], AWS_SESSION_TOKEN:ENV['AWS_SESSION_TOKEN']}, inline: <<-SHELL
       apt-get update
-      apt-get install -y apache2 php libapache2-mod-php php-mysql
+      apt-get install -y apache2 php libapache2-mod-php php-mysql php-xml unzip composer
 
       cp /vagrant/client-website.conf /etc/apache2/sites-available/
       a2ensite client-website
       a2dissite 000-default
       service apache2 reload
+      echo $'[default]\n' > credentials
+      echo "aws_access_key_id=${AWS_ACCESS_KEY_ID}" >> credentials
+      echo $'\n' >> credentials
+      echo "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}" >> credentials
+      echo $'\n' >> credentials
+      echo "aws_session_token=${AWS_SESSION_TOKEN}" >> credentials
+      mkdir /.aws
+      mv credentials /.aws/.
+      chmod 777 /.aws/credentials
+      cd /vagrant/
+      composer require aws/aws-sdk-php
     SHELL
     
     # Print out the Elastic IP Address for easy copy-paste to browser.

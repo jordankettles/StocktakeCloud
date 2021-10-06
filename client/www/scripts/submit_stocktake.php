@@ -1,4 +1,8 @@
 <?php
+    require '/vagrant/vendor/autoload.php';
+
+    use Aws\Sns\SnsClient;
+    use Aws\Exception\AwsException;
     // Initialize the session
     session_start();
     
@@ -55,9 +59,33 @@
 
             # This references the products we just inserted into StocktakeProds with the same $stock_num
             $pdo->exec("INSERT INTO StocktakeRefs VALUES ('$date', $stock_num, $adminID)");
+
         }
     }catch(PDOException $e){
         die("ERROR: Could not connect. " . $e->getMessage());
+    }
+
+    try {
+        #Send SNS message.
+        # I used the aws php sdk examples github repo as a guide.
+        # https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/php/example_code/sns
+        $SnSclient = new SnsClient([
+            'profile' => 'default',
+            'region' => 'us-east-1',
+            'version' => '2010-03-31'
+        ]);
+
+        $message = 'A new stocktake #' . $stock_num .' was submitted by user #' .  $_SESSION['id'] . ' at ' . $date . '. ';
+        $topic = 'arn:aws:sns:us-east-1:898431862435:StocktakeCloud';
+
+        $result = $SnSclient->publish([
+            'Message' => $message,
+            'TopicArn' => $topic,
+        ]);
+        var_dump($result);
+    } catch (AwsException $e) {
+        // output error message if fails
+        error_log($e->getMessage());
     }
 
     # Return to stocktake page
