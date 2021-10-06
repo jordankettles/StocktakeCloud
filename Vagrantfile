@@ -62,6 +62,8 @@ Vagrant.configure("2") do |config|
       a2ensite client-website
       a2dissite 000-default
       service apache2 reload
+
+      # setup AWS.
       echo $'[default]\n' > credentials
       echo "aws_access_key_id=${AWS_ACCESS_KEY_ID}" >> credentials
       echo $'\n' >> credentials
@@ -115,14 +117,27 @@ Vagrant.configure("2") do |config|
       override.ssh.username = "ubuntu"
     end
 
-    webserverAdmin.vm.provision "shell", inline: <<-SHELL
+    webserverAdmin.vm.provision "shell", env: {AWS_ACCESS_KEY_ID:ENV['AWS_ACCESS_KEY_ID'], AWS_SECRET_ACCESS_KEY:ENV['AWS_SECRET_ACCESS_KEY'], AWS_SESSION_TOKEN:ENV['AWS_SESSION_TOKEN']}, inline: <<-SHELL
       apt-get update
-      apt-get install -y apache2 php libapache2-mod-php php-mysql mysql-client
+      apt-get install -y apache2 php libapache2-mod-php php-mysql mysql-client php-xml unzip composer
 
       cp /vagrant/admin-website.conf /etc/apache2/sites-available/
       a2ensite admin-website
       a2dissite 000-default
       service apache2 reload
+
+      # setup AWS
+      echo $'[default]\n' > credentials
+      echo "aws_access_key_id=${AWS_ACCESS_KEY_ID}" >> credentials
+      echo $'\n' >> credentials
+      echo "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}" >> credentials
+      echo $'\n' >> credentials
+      echo "aws_session_token=${AWS_SESSION_TOKEN}" >> credentials
+      mkdir /.aws
+      mv credentials /.aws/.
+      chmod 777 /.aws/credentials
+      cd /vagrant/
+      composer require aws/aws-sdk-php
 
       # Setup database
       # touch ~/.my.cnf

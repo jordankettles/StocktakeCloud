@@ -42,6 +42,30 @@ h1, h2, h3, p {
     justify-content: center;
 }
 
+#change_email {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: auto;
+    width: 40%;
+    padding: 1em;
+    padding-top: 2em;
+    row-gap: 0.6em;
+    justify-content: center;
+}
+
+#change_email label + input {
+    width: 18em;
+}
+
+#submit_email {
+    display: block;
+    margin: auto;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    grid-column: span 2;
+
+}
+
 #required_text {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
@@ -156,7 +180,7 @@ fieldset {
     border: none;
 }
 
-table, th, td, fieldset, #current {
+table, th, td, fieldset, #current, #change_email {
 background-color: #406de7;
 border-radius: 15px;
 }

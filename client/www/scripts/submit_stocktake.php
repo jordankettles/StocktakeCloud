@@ -83,7 +83,8 @@
             'TopicArn' => $topic,
         ]);
         var_dump($result);
-    } catch (AwsException $e) {
+    } 
+    catch (AwsException $e) {
         // output error message if fails
         error_log($e->getMessage());
     }

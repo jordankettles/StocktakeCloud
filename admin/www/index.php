@@ -224,6 +224,14 @@
             ?>
         </table>
 
+        <div>
+            <h2>Update Email Address</h2>
+            <form id="change_email" method="post" enctype="aplication/x-www-form-urlencoded" action="scripts/change_email.php">
+                    <label for="email">Email*: </label><input type="email" placeholder="Email" id="email" name="email" required>
+                    <input id="submit_email" type="submit" value="Submit">
+            </form>
+        </div>
+
         <section>
             <h2>Logout</h2>
             <form action="signing/logout.php">
