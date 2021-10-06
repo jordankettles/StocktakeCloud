@@ -40,4 +40,4 @@ set SEC_GROUP=blank
 
 set SUBNET_ID=blank
 
-vagrant %1
+vagrant %1 %2
