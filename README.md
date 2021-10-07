@@ -145,6 +145,17 @@ Now we need to set up a script to be run before launching the EC2-instances usin
 
 #### RDS Database Initialisation
 
+With your RDS setup and running, you now need to setup the correct tables for the App which are found in the `.sql` scripts under `StocktakeCloud/setup/db`.
+- Setting up the database requires a MySQL installation, follow the instructions found at https://dev.mysql.com/doc/mysql-installation-excerpt/5.7/en/ for your OS, for MacOS I recommend using Homebrew (if you don't have this installed see the guide at https://brew.sh/), and the guide for using Homebrew for installing MySQL is found here: https://flaviocopes.com/mysql-how-to-install/.
+- With MySQL installed on your system, change your working directory to `StocktakeCloud/setup/db`.
+- You should now be able to access your RDS instance with the command `mysql -h <endpoint> -P <port> -u <username> -p`, and enter the password for your database when it prompts you to
+- Now that you've accessed your RDS Instance (you should see `>mysql` in the prompt window), run these commands:
+  - `CREATE DATABASE stocktake;`
+  - `USE STOCKTAKE`
+  - `source setup-database.sql`
+ - Your database should now be setup to be used by the web application
+
+
 #### Vagrant 
 Now you can start the application.
 
