@@ -12,6 +12,9 @@ set AWS_ACCESS_KEY_ID=blank
 set AWS_SECRET_ACCESS_KEY=blank
 set AWS_SESSION_TOKEN=blank
 
+set SNS_KEY=
+set SNS_SECRET=
+
 ::-----------------------------------------------------------#
 :: Keypair 
 
