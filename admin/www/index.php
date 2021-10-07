@@ -37,6 +37,15 @@
     <body>
         <h1>Stocktake App Admin Page</h1>
 
+        <section id="logout_section">
+            <?php
+                echo "<p>Welcome, " . $_SESSION["username"] . ".<p>"
+            ?>
+            <form action="signing/logout.php">
+                <input type="submit" value="Logout"/>
+            </form>
+        </section>
+
         <p>Welcome to the Admin page for Super Bartenders.</p>
 
         <h2>Current Stocktake Products</h2>
@@ -185,44 +194,49 @@
                 }
             ?>
         </table>
+        <section class="users_section">
+            <div>
+                <h2>User Access Requests</h2>
+                <table class="users_table">
+                    <tr><th>Client Username</th><th>Allow Access</th></tr>
 
-        <!-- Maybe change to an alert? -->
-        <h2>Users requesting table access</h2>
-        <table id="clientRequests">
-            <tr><th>Client Username</th><th>Allow Access</th></tr>
+                    <?php 
+                        $q = $pdo->query("SELECT * FROM ClientRequests WHERE adminID=" . $_SESSION['id']);
+                        while ($row = $q->fetch()) {
+                            echo '<tr><td>';
+                            echo $row['clientUsername'];
+                            echo '<td><a href="scripts/allow_access.php?id='.$row['clientID'].'"><input type="submit" name="submit"
+                            value="Allow" class="Register" /></a></td>';
+                        }
+                    ?>
+                </table>
+            </div>
 
-            <?php 
-                $q = $pdo->query("SELECT * FROM ClientRequests WHERE adminID=" . $_SESSION['id']);
-                while ($row = $q->fetch()) {
-                    echo '<tr><td>';
-                    echo $row['clientUsername'];
-                    echo '<td><a href="scripts/allow_access.php?id='.$row['clientID'].'"><input type="submit" name="submit"
-                    value="Allow" class="Register" /></a></td>';
-                }
-            ?>
-        </table>
+            <div>
 
-        <h2>Allowed clients</h2>
-        <table id="clientRequests">
-            <tr><th>Client Username</th><th>Allow Access</th></tr>
+                <h2>Current Users</h2>
+                <table class="users_table">
+                    <tr><th>Client Username</th><th>Remove Access</th></tr>
 
-            <?php 
-                $q = $pdo->query("SELECT * FROM ClientTableAccess WHERE adminID=" . $_SESSION['id']);
-                $clients = array();
+                    <?php 
+                        $q = $pdo->query("SELECT * FROM ClientTableAccess WHERE adminID=" . $_SESSION['id']);
+                        $clients = array();
 
-                while ($row = $q->fetch()) {
-                    $clients[$row['clientID']] = $pdo->query("SELECT * FROM ClientUsers WHERE id=" . $row['clientID'])->fetch()['username'];
-                }
-                $q = $pdo->query("SELECT * FROM ClientTableAccess WHERE adminID=" . $_SESSION['id']);
+                        while ($row = $q->fetch()) {
+                            $clients[$row['clientID']] = $pdo->query("SELECT * FROM ClientUsers WHERE id=" . $row['clientID'])->fetch()['username'];
+                        }
+                        $q = $pdo->query("SELECT * FROM ClientTableAccess WHERE adminID=" . $_SESSION['id']);
 
-                while ($row = $q->fetch()) {
-                    echo '<tr><td>';
-                    echo $clients[$row['clientID']];
-                    echo '<td><a href="scripts/remove_access.php?id='.$row['clientID'].'"><input type="submit" name="submit"
-                    value="Remove" class="Register" /></a></td>';
-                }
-            ?>
-        </table>
+                        while ($row = $q->fetch()) {
+                            echo '<tr><td>';
+                            echo $clients[$row['clientID']];
+                            echo '<td><a href="scripts/remove_access.php?id='.$row['clientID'].'"><input type="submit" name="submit"
+                            value="Remove" class="Register" /></a></td>';
+                        }
+                    ?>
+                </table>
+            </div>
+        </section>
 
         <div>
             <h2>Update Email Address</h2>
@@ -231,13 +245,5 @@
                     <input id="submit_email" type="submit" value="Submit">
             </form>
         </div>
-
-        <section>
-            <h2>Logout</h2>
-            <form action="signing/logout.php">
-                <input type="submit" value="Logout"/>
-            </form>
-        </section>
-
     </body>
 </html>

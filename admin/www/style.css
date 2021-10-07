@@ -24,6 +24,10 @@ h1, h2, h3, p {
     text-align: center;
 }
 
+.users_table td, .users_table th {
+    text-align: center;
+}
+
 #calculator {
     padding-top: 1em;
     padding-bottom: 1em;
@@ -92,11 +96,23 @@ h1, h2, h3, p {
     padding-left: 1em;
 }
 
-.admin_section {
+.admin_section, .users_section {
     margin: auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
     width: 75%;
+}
+
+#logout_section {
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin: 1em;
+    padding: 0.5em;
+}
+
+#logout_section input {
+    font-size: 1em;
 }
 
 .admin_section div:nth-of-type(2) {
@@ -180,7 +196,7 @@ fieldset {
     border: none;
 }
 
-table, th, td, fieldset, #current, #change_email {
+table, th, td, fieldset, #current, #change_email, #logout_section {
 background-color: #406de7;
 border-radius: 15px;
 }

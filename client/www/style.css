@@ -147,6 +147,18 @@ fieldset {
     grid-column: span 3;
 }
 
+#logout_section {
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin: 1em;
+    padding: 0.5em;
+}
+
+#logout_section input {
+    font-size: 1em;
+}
+
 th { 
     text-align: left;
     font-size: 1.05em;
@@ -156,7 +168,7 @@ fieldset {
     border: none;
 }
 
-table, th, td, fieldset, #current {
+table, th, td, fieldset, #current, #logout_section {
 background-color: #406de7;
 border-radius: 15px;
 }

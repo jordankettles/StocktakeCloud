@@ -73,21 +73,32 @@
     <body>
         <h1>Stocktake App</h1>
 
+        <section id="logout_section">
+            <?php
+                echo "<p>Welcome, " . $_SESSION["username"] . ".<p>"
+            ?>
+            <form action="signing/logout.php">
+                <input type="submit" value="Logout"/>
+            </form>
+        </section>
+
         <p>Welcome to the stocktaking app for [insert your bar name here]!</p>
         
         <section>
-            <h2 id="start_text">Start a Stocktake</h2>
-            <form method="post" enctype="aplication/x-www-form-urlencoded" action="scripts/submit_stocktake.php">
-                <fieldset id="stocktake">
-                    <!-- <legend>Spirits</legend> -->
-                    <p>Product Name</p>
-                    <p>Desired Quantity</p>
-                    <p>Current Quantity</p>
                     <?php
                         # Table access
                         $adminID = $pdo->query("SELECT * FROM ClientTableAccess WHERE clientID=" . $_SESSION['id'])->fetch()['adminID'];
                         # Loop through the tables displaying each item with current_count input as an option next to each
                         if (!empty($adminID)) {
+
+                            echo '<h2 id="start_text">Start a Stocktake</h2>
+                                    <form method="post" enctype="aplication/x-www-form-urlencoded" action="scripts/submit_stocktake.php">
+                                        <fieldset id="stocktake">
+                                        <!-- <legend>Spirits</legend> -->
+                                            <p>Product Name</p>
+                                            <p>Desired Quantity</p>
+                                            <p>Current Quantity</p>';
+
                             $tables = array("Spirits", "Wine", "Beer", "NonAlc");
                             foreach($tables as $table) {
                                 $sql = "SELECT * FROM $table WHERE adminID=$adminID";
@@ -102,22 +113,26 @@
                                     }
                                 }
                             }
+
+                            echo ' <input id="submit_stocktake" type="submit" value="Submit Stocktake">
+                                    </fieldset>
+                                    </form>';
+
                         }
                     ?>
-                    <input id="submit_stocktake" type="submit" value="Submit Stocktake">
-                </fieldset>
-            </form>
         </section>
         <section>
-            <h2>Calculator to convert weight into volume!</h2>
-            <form action="#" onsubmit="calculateVolume(event)">
-                <fieldset id="calculator">
-                    <select name="product" id="converter">
                         <?php
                             # Table access
                             $adminID = $pdo->query("SELECT * FROM ClientTableAccess WHERE clientID=" . $_SESSION['id'])->fetch()['adminID'];
                             # Union spirits and wine as these are the only tables that can be used with the calculator 
                             if (!empty($adminID)) {
+
+                                echo '<h2>Calculator to convert weight into volume!</h2>
+                                        <form action="#" onsubmit="calculateVolume(event)">
+                                            <fieldset id="calculator">
+                                                <select name="product" id="converter">';
+
                                 $sql = "SELECT * FROM Spirits WHERE adminID=$adminID UNION SELECT * FROM Wine WHERE adminID=$adminID";
                                 $q = $pdo->query($sql);
 
@@ -130,31 +145,35 @@
                                             "'>" . $row['name'] . "</option>\n";
                                     }
                                 }
+
+                                echo '</select>
+                                    <label for="current_weight">Current Weight (g): </label>
+                                    <input type="number" placeholder="Current Weight" id="current_weight" name="current_weight" min="0">
+                                    <input type="submit" value="Calculate!">
+                                    <p id="vol_calc"></p>
+                                    </fieldset>
+                                    </form>';
+
                             }
                         ?>
-                    </select>
-                    <label for="current_weight">Current Weight (g): </label>
-                    <input type="number" placeholder="Current Weight" id="current_weight" name="current_weight" min="0">
-                    <input type="submit" value="Calculate!">
-                    <p id="vol_calc"></p>
-                </fieldset>
-            </form>
+
         </section>
-        <section>
-            <h2>Submit access to table</h2>
-            <form method="post" enctype="aplication/x-www-form-urlencoded" action="scripts/table_request.php">
-                <fieldset id="tableRequest">
-                    <label for="adminUsername">Admin Username: </label>
-                    <input type="text" id="adminUsername" name="adminUsername">
-                    <input type="submit" value="Submit">
-                </fieldset>
-            </form>
-        </section>
-        <section>
-            <h2>Logout</h2>
-            <form action="signing/logout.php">
-                <input type="submit" value="Logout"/>
-            </form>
-        </section>
+
+        <?php
+            $adminID = $pdo->query("SELECT * FROM ClientTableAccess WHERE clientID=" . $_SESSION['id'])->fetch()['adminID'];
+            if (empty($adminID)) {
+                echo '<section>
+                        <h2>Request Table Access</h2>
+                        <form method="post" enctype="aplication/x-www-form-urlencoded" action="scripts/table_request.php">
+                            <fieldset id="tableRequest">
+                                <label for="adminUsername">Admin Username: </label>
+                                <input type="text" id="adminUsername" name="adminUsername">
+                                <input type="submit" value="Submit">
+                            </fieldset>
+                        </form>
+                    </section>';
+            }
+        ?>
+        
     </body>
 </html>
