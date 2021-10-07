@@ -48,6 +48,7 @@ Our aim is provide as much automation as possible for the manager during the sto
   - If the product is counted indiviually, then an integer can be entered.
   - If the product is measured in volume, then amount of full products + the ratio of the currently in-use product can be entered.
   - The manager can use the calculator to work out the ratio of current in-use products.
+- A secure login system for which they use to access their respective business's stocktake database.
 
 ### 4. Tools for the owner
 
@@ -58,29 +59,34 @@ Our aim is to provide tools for the owner to monitor the stocktakes that have be
 - Add/remove current stocktake products.
 - Assign desired quantity to products.
 - Assign weights to products measured by volume.
+- A secure login system where they can see what managers/clients have requested access to their stocktake database.
+- // SNS email notifications
 
 ## AWS
 
 ### Client webserver
 
-Virtual Machine (VM) 1 is the index of the client site, which uses 'index.php'. The client site can:
+The Client webserver runs on an EC2 instance, features a login system for which the client signs up an account (username and password). The Client website can:
 
-- Read all the products and desired quantities stored in the database.
--	Write new stocktakes to the database using ‘submit_stocktake.php’.
+- Request access to their business's stocktake database by entering the username of the admin which has control over the database. Once access has been granted, the client can:
+  - Read all the products and desired quantities stored in the database.
+  -	Write new stocktakes to the database using ‘submit_stocktake.php’.
  
 
 ### Admin webserver
 
-The second VM is the admin site, which uses ‘admin.php’. The admin site can:
+The Admin webserver runs on an EC2 instance and features a login system like the Client webserver. The admin website can:
 -	Read the products and all related information in the database such as volume and weights.
 -	Read all previous stored stocktakes in the database using ‘records.php’.
 -	Delete stocktake products from the database using ‘delete_product.php’.
 -	Add new stocktake products to the database using ‘insert_product.php’.
+-	Allow a Client access to their business's database.
+-	Enter the email for notifications using SNS
 
 
 ### RDS instance
 
-The third VM is the MySQL server which provides the database for the application and receives queries from VM 1 & VM 2.
+All storage is provided by an Amazon Relational Database Service (or RDS) using MySQL, which has all stocktake related tables as well as tables for the Admin and Client users.
 
 ### SNS
 
@@ -97,20 +103,49 @@ To install our application, you computer will need to support virtualisation. Yo
   - Built on *v6.1.26* but any *v6.1.x* 'should' be ok <sup>[1](#myfootnote1)</sup>
   -   Follow the installation guide for your operating system found [here](https://www.virtualbox.org/manual/ch02.html)
 
+- An Amazon Web Services (AWS) account 
+
 <a name="myfootnote1">1</a>: *Other versions have not been tested, so if problems occur please install the same versions the application was built on. If problems still occur, please add the problems to our GitHub Issues.*
 
 ### Installation, Starting, and Stopping.
 
-<!-- https://user-images.githubusercontent.com/70932357/133020380-abd3554e-f16a-4819-bcd3-b8b21f977ac5.mp4 -->
+#### AWS Keypairs
+
+#### EC2 Instances
+
+#### RDS Instance
+
+#### SNS Instance
+
 
 To begin installing our application, you will first need to clone the repo.
 
-- `git clone https://github.com/timcop/Stocktake`
+- `git clone https://github.com/jordankettles/StocktakeCloud`
 
 Once you have successfully cloned the repo, cd into the repository.
 
-- `cd Stocktake`
+- `cd StocktakeCloud`
 
+
+Now you will need to enter details specific to your AWS account into the `.aws/credentials file`. For AWS educate accounts:
+- Sign in to your educate account here https://www.awseducate.com/signin/SiteLogin
+- Navigate to the "My Classrooms" tab located in the top right corner
+- Click on "Go to Classroom", this should take you to your "Workbench" page
+- Click on "Account details" and then AWS CLI: [Show]
+- Copy and paste the details found here to `StocktakeCloud/.aws/credentials`
+
+Now we need to set up a script to be run before launching the EC2-instances using Vagrant, for Windows users this file is a batch (`.bat`) and for Mac users this file is a shell script (`.sh`) found in the `StocktakeCloud/setup` directory 
+
+- Enter your `aws_access_key_id`, `aws_secret_access_key` and the `aws_session_token` contained in your `.aws/credentials` file to the variables of the same name (but capitalised).
+- Enter your `sns_key` and `sns_secret` values pertaining to your SNS instance
+- Enter the `keypair_name` and `private_key_path` associated with your AWS account
+- Enter the elastic IP's used for both EC2 instances to their respective variables
+- Enter the security group id used for which the EC2 instances and the RDS are setup with
+- Enter the Subnet ID's used for both EC2 instances
+
+#### RDS Database Initialisation
+
+#### Vagrant 
 Now you can start the application.
 
 -  `vagrant up`
