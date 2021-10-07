@@ -1,4 +1,8 @@
 <?php
+// This code is taken from Tutoail Repulic's tutorial on implementing a PHP MySQL login system,
+// more can be found here: https://www.tutorialrepublic.com/php-tutorial/php-mysql-login-system.php
+
+
 // Include config file
 require_once "../config.php";
  
