@@ -81,6 +81,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "webserverAdmin" do |webserverAdmin|
     webserverAdmin.vm.hostname = "webserverAdmin"
+    webserverAdmin.trigger.before :destroy do |trigger|
+      trigger.run_remote = {inline: "bash -c 'export MYSQL_PWD=\'database2\'; echo \"DROP DATABASE stocktake;\" | mysql -h database-2.crx8snaug9em.us-east-1.rds.amazonaws.com -P 3306 -u database2'"}
+    end
+
     webserverAdmin.vm.provider :aws do |webserverAdmin, override|
       webserverAdmin.region = "us-east-1"
       override.nfs.functional = false
@@ -113,6 +117,8 @@ Vagrant.configure("2") do |config|
   
       # Override the ssh username becasue we are using Ubuntu.
       override.ssh.username = "ubuntu"
+
+      
     end
 
     webserverAdmin.vm.provision "shell", env: {SNS_KEY:ENV['SNS_KEY'], SNS_SECRET:ENV['SNS_SECRET']}, inline: <<-SHELL
@@ -137,7 +143,10 @@ Vagrant.configure("2") do |config|
 
       # Setup database
       # touch ~/.my.cnf
-      # mysql -h database-1.crx8snaug9em.us-east-1.rds.amazonaws.com -P 3306 -u database1
+      export MYSQL_PWD='database2'
+      echo "CREATE DATABASE stocktake;" | mysql -h database-2.crx8snaug9em.us-east-1.rds.amazonaws.com -P 3306 -u database2
+      cat /vagrant/setup-database.sql | mysql -h database-2.crx8snaug9em.us-east-1.rds.amazonaws.com -P 3306 -u database2 stocktake
+      cat /vagrant/demo-values.sql | mysql -h database-2.crx8snaug9em.us-east-1.rds.amazonaws.com -P 3306 -u database2 stocktake
 
     SHELL
     # Print out the Elastic IP Address for easy copy-paste to browser.

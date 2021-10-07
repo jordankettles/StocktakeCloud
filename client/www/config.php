@@ -7,10 +7,10 @@
     server with default setting (user 'root' with no password) */
 
     // Maybe use ENV variables ??
-    $db_host   = 'database-1.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
+    $db_host   = 'database-2.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
     $db_name   = 'stocktake';
-    $db_user   = 'database1';
-    $db_passwd = 'database-1'; # Change this too.
+    $db_user   = 'database2';
+    $db_passwd = 'database2'; # Change this too.
 
     $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
 
