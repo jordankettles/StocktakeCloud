@@ -34,10 +34,12 @@
 
     if (count($subscriptions['Subscriptions']) > 0) {
         try {
-            foreach ($subscriptions['Subscriptions'] as $sub)
-            $unsub = $SnSclient->unsubscribe([
-                'SubscriptionArn' => $sub['SubscriptionArn'],
-            ]);
+            foreach ($subscriptions['Subscriptions'] as $sub) {
+                if ($sub['SubscriptionArn'] != 'PendingConfirmation')
+                $unsub = $SnSclient->unsubscribe([
+                    'SubscriptionArn' => $sub['SubscriptionArn'],
+                ]);
+            }
         }
         catch (AwsException $e) {
             // output error message if fails
