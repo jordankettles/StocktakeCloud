@@ -203,7 +203,7 @@ Now we need to set up a script to be run before launching the EC2-instances usin
 
 - Enter your `aws_access_key_id`, `aws_secret_access_key` and the `aws_session_token`to the variables of the same name (but capitalised).
 - Enter your `sns_key` and `sns_secret` values from to your new IAM user with SNSFullAccess, or use your student details again and add your session token manually.
-- Enter the `keypair_name` and `private_key_path` that you downloaded previously.
+- Enter the `keypair_name` and `private_key_path` that you downloaded previously. If you haven't done this before, navigate to Key Pairs under Network and security in the left hadn menu in your EC2 management console and generate a keypair, give it a name (`keypair_name`) and download the .pem file and place this in `~/.ssh`, then `private_key_path = ~/.ssh/<keypair_name>`.
 - Enter the two Elastic IPs you created.
 - Enter the security group id used for which the EC2 instances and the RDS are setup with.
 - Enter your Subnet ID.
