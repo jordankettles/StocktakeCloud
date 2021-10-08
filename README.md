@@ -113,7 +113,6 @@ To install our application, you computer will need to support virtualisation. Yo
 
 ### Installation, Starting, and Stopping.
 
-
 #### Elastic IPs
 
 For your convenience, you can create two Elastic IPs for your EC2 instances. You can skip this step and comment out the elastic ip line in the Vagrantfile, but once you `vagrant up`, you will have to navigate to your EC2 console to get the Public IPv4 DNS link for both of your EC2 instances to access them through a web browser. To generate two Elastic IPs, begin by navigating to your EC2 console on AWS.
@@ -132,13 +131,21 @@ To find the Subnet ID of your availability zone (we are using us-east-1a), use t
 
 Note the SubnetID.
 
-#### Security Groups
+#### Security Group
 
-for tim
+We used the default VPC and default security group that comes with it, however we changed the inbound rules to
+
+<img width="1437" alt="Screen Shot 2021-10-08 at 12 48 00 AM" src="https://user-images.githubusercontent.com/70932357/136502741-ba5ee620-aa74-4150-865d-97bf48c35d1b.png">
+
+Take note of the security group ID 
 
 #### RDS Instance
 
-For tim
+Navigate to the RDS page on your AWS console and create a new RDS with the following settings:
+
+![Screen Shot 2021-10-08 at 6 26 02 PM](https://user-images.githubusercontent.com/70932357/136502978-7aa72c35-52c2-43ba-a915-d55a3ea9bf0c.png)
+
+Feel free to use your own database username/passwords, take note of both of these as well as the endpoint.
 
 #### SNS Topic
 
@@ -178,16 +185,23 @@ Once you have successfully cloned the repo, cd into the repository.
 
 - `cd StocktakeCloud`
 
-Now you will need to enter details specific to your AWS account into the `.aws/credentials file`. For AWS educate accounts:
+<!-- Now you will need to enter details specific to your AWS account into the `.aws/credentials file`. For AWS educate accounts:
 - Sign in to your educate account here https://www.awseducate.com/signin/SiteLogin
 - Navigate to the "My Classrooms" tab located in the top right corner
 - Click on "Go to Classroom", this should take you to your "Workbench" page
 - Click on "Account details" and then AWS CLI: [Show]
-- Copy and paste the details found here to `StocktakeCloud/.aws/credentials`
+- Copy and paste the details found here to `StocktakeCloud/.aws/credentials` -->
+Depending on your account type you will need to get your AWS credentials, for educate accounts:
+- Sign in to your educate account here https://www.awseducate.com/signin/SiteLogin
+- Navigate to the "My Classrooms" tab located in the top right corner
+- Click on "Go to Classroom", this should take you to your "Workbench" page
+- Click on "Account details" and then AWS CLI: [Show]
+
+For other account types you will have to look into how to find these yourself.
 
 Now we need to set up a script to be run before launching the EC2-instances using Vagrant, Mac / Unix users this file is a shell script (`.sh`) found in the `StocktakeCloud/setup` directory, for Windows users this file is a batch (`.bat`) and replaces the `vagrant` command.
 
-- Enter your `aws_access_key_id`, `aws_secret_access_key` and the `aws_session_token` contained in your `.aws/credentials` file to the variables of the same name (but capitalised).
+- Enter your `aws_access_key_id`, `aws_secret_access_key` and the `aws_session_token`to the variables of the same name (but capitalised).
 - Enter your `sns_key` and `sns_secret` values from to your new IAM user with SNSFullAccess, or use your student details again and add your session token manually.
 - Enter the `keypair_name` and `private_key_path` that you downloaded previously.
 - Enter the two Elastic IPs you created.
@@ -196,23 +210,19 @@ Now we need to set up a script to be run before launching the EC2-instances usin
 
 #### RDS Database Initialisation
 
-With your RDS setup and running, you now need to setup the correct tables for the App which are found in the `.sql` scripts under `StocktakeCloud/setup/db`.
-- Setting up the database requires a MySQL installation, follow the instructions found at https://dev.mysql.com/doc/mysql-installation-excerpt/5.7/en/ for your OS, for MacOS I recommend using Homebrew (if you don't have this installed see the guide at https://brew.sh/), and the guide for using Homebrew for installing MySQL is found here: https://flaviocopes.com/mysql-how-to-install/.
-- With MySQL installed on your system, change your working directory to `StocktakeCloud/setup/db`.
-- You should now be able to access your RDS instance with the command `mysql -h <endpoint> -P <port> -u <username> -p`, and enter the password for your database when it prompts you to
-- Now that you've accessed your RDS Instance (you should see `>mysql` in the prompt window), run these commands:
-  - `CREATE DATABASE stocktake;`
-  - `USE STOCKTAKE`
-  - `source setup-database.sql`
- - Your database should now be setup to be used by the web application
+With your RDS setup and running, you now need to setup the correct tables for the App. This is done within the webserverAdmin provisioning in the Vagrantfile, to set this up correctly do the following:
+- You need to change all forms of the command `mysql -h <endpoint> -P <port> -u <username>` to suit your RDS instance. You also need to change the `export   MYSQL_PWD=<password>`. These can both be found in the provisioning script of webserverAdmin, as well as the `:destroy` trigger found at ~line 86. 
 
+- Finally, change both `config.php` files within `/admin` and `/client` with your correct RDS values
+![Screen Shot 2021-10-08 at 6 45 50 PM](https://user-images.githubusercontent.com/70932357/136504633-b729705f-fb4a-45a9-87c0-8623864a805d.png)
 
 #### Vagrant 
-Now you can start the application.
+Now you can start the application. If you are on MacOS, run `source setup/aws.sh` to export the environment variables set earlier and run `vagrant up`. For Windows users, all you need to do is run `vg.bat` (assuming you have entered the values in). Note you will see red text mentioning Composer 2 should be used instead of Composer 1, you can ignore this.
 
--  `vagrant up`
 
-You now should have successfully installed and started the application. To close the application, run the following command in the same directory.
+You now should have successfully installed and started the application. To access the websites login to your AWS and navigate to the EC2 Management console, you should see two instances running. Click on these instances then click on the "Open address" next to the Public IPv4 address. Note that this will open up an `https://<public IPv4>` however our Apache 2 isn't set up for `https`, so click on the url and make it http like `http://<public IPv4>`. You should now see a login page for both the Client and Admin pages.
+
+To close the application, run the following command in the same directory. 
 
 - `vagrant destroy`
 
