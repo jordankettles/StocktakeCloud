@@ -81,6 +81,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "webserverAdmin" do |webserverAdmin|
     webserverAdmin.vm.hostname = "webserverAdmin"
+
+    ## Trigger deletes the database on vagrant destroy, change with your correct RDS values
     webserverAdmin.trigger.before :destroy do |trigger|
       trigger.run_remote = {inline: "bash -c 'export MYSQL_PWD=\'database2\'; echo \"DROP DATABASE stocktake;\" | mysql -h database-2.crx8snaug9em.us-east-1.rds.amazonaws.com -P 3306 -u database2'"}
     end
@@ -141,9 +143,11 @@ Vagrant.configure("2") do |config|
       cd /vagrant/
       composer require aws/aws-sdk-php
 
-      # Setup database
-      # touch ~/.my.cnf
-      export MYSQL_PWD='database2'
+      # Setup database, NEED TO CHANGE WITH YOUR VALUES
+     
+      export MYSQL_PWD='database2' #Change with your password
+
+      # For statements of the form `mysql -h <endpoint> -P <port> -u <username>` change these to match your RDS instance
       echo "CREATE DATABASE stocktake;" | mysql -h database-2.crx8snaug9em.us-east-1.rds.amazonaws.com -P 3306 -u database2
       cat /vagrant/setup-database.sql | mysql -h database-2.crx8snaug9em.us-east-1.rds.amazonaws.com -P 3306 -u database2 stocktake
       cat /vagrant/demo-values.sql | mysql -h database-2.crx8snaug9em.us-east-1.rds.amazonaws.com -P 3306 -u database2 stocktake

@@ -3,14 +3,11 @@
 // more can be found here: https://www.tutorialrepublic.com/php-tutorial/php-mysql-login-system.php
 
 
-    /* Database credentials. Assuming you are running MySQL
-    server with default setting (user 'root' with no password) */
-
-    // Maybe use ENV variables ??
+    ## Database credentials 
     $db_host   = 'database-2.crx8snaug9em.us-east-1.rds.amazonaws.com'; # Change this to RDS instance endpoint.
     $db_name   = 'stocktake';
-    $db_user   = 'database2';
-    $db_passwd = 'database2'; # Change this too.
+    $db_user   = 'database2'; # Change to your username for your RDS
+    $db_passwd = 'database2'; # Change to your password for your RDS
 
     $pdo_dsn = "mysql:host=$db_host;port=3306;dbname=$db_name";
 
