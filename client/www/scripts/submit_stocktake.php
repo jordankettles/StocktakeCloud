@@ -75,7 +75,7 @@
             'version' => '2010-03-31'
         ]);
 
-        $message = 'A new stocktake #' . $stock_num .' was submitted by user #' .  $_SESSION['username'] . ' at ' . $date . '. ';
+        $message = 'A new stocktake #' . $stock_num .' was submitted by user ' . $_SESSION['username'] . ' at ' . $date . '. ';
         $topic = 'arn:aws:sns:us-east-1:898431862435:StocktakeCloud';
 
         $result = $SnSclient->publish([
