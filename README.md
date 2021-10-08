@@ -1,21 +1,6 @@
 # StocktakeCloud
 
-<!-- ## Assignment Description
-- Application should be built using at least 2 VM's interacting
-  - 2x EC2 instances
-    - Webservers
-  - 2X non-EC2 cloud services
-    - Database
-    - Notication service (maybe)
-    - [How to Create a RDS Notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.overview.html)
-    - [How to subscribe an email to Notifications](https://docs.aws.amazon.com/sns/latest/dg/sns-email-notifications.html)
-    - User Credentials login for database (Cognito maybe)
 
-
-
- -->
-<!-- # Stocktake
- -->
 A web application to aid in the **stocktake** process for bars. 
 We use 2 AWS-EC2 instances to host both an admin and client webservers, AWS-RDS to host a database and an AWS-SNS service for email notifications.
 
@@ -60,7 +45,6 @@ Our aim is to provide tools for the owner to monitor the stocktakes that have be
 - Assign desired quantity to products.
 - Assign weights to products measured by volume.
 - A secure login system where they can see what managers/clients have requested access to their stocktake database.
-- // SNS email notifications
 
 ## AWS
 
