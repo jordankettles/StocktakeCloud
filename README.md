@@ -66,7 +66,7 @@ Our aim is to provide tools for the owner to monitor the stocktakes that have be
 
 ### Client webserver
 
-The Client webserver runs on an EC2 instance, features a login system for which the client signs up an account (username and password). The Client website can:
+The client webserver runs on an EC2 instance, features a login system for which the client signs up an account (username and password). The client website can:
 
 - Request access to their business's stocktake database by entering the username of the admin which has control over the database. Once access has been granted, the client can:
   - Read all the products and desired quantities stored in the database.
@@ -80,8 +80,9 @@ The Admin webserver runs on an EC2 instance and features a login system like the
 -	Read all previous stored stocktakes in the database using ‘records.php’.
 -	Delete stocktake products from the database using ‘delete_product.php’.
 -	Add new stocktake products to the database using ‘insert_product.php’.
--	Allow a Client access to their business's database.
--	Enter the email for notifications using SNS
+-	Allow a client access to their business's database.
+-	Remove client access to their business's database.
+-	Enter the email for notifications using SNS.
 
 
 ### RDS instance
@@ -89,6 +90,9 @@ The Admin webserver runs on an EC2 instance and features a login system like the
 All storage is provided by an Amazon Relational Database Service (or RDS) using MySQL, which has all stocktake related tables as well as tables for the Admin and Client users.
 
 ### SNS
+
+The client site publishes a message to the SNS Topic each time a new stocktake is performed. The admin site can unsubscribe and subscribe email accounts to the topic. An example message that a subscribed email might recieve looks like this:
+-	`A new stocktake #13 was submitted by user cosc349client at 21-10-06 20:21:37.`
 
 ## Installation and Usage
 
@@ -109,14 +113,47 @@ To install our application, you computer will need to support virtualisation. Yo
 
 ### Installation, Starting, and Stopping.
 
-#### AWS Keypairs
 
-#### EC2 Instances
+#### Elastic IPs
+
+For your convenience, you can create two Elastic IPs for your EC2 instances. You can skip this step and comment out the elastic ip line in the Vagrantfile, but once you `vagrant up`, you will have to navigate to your EC2 console to get the Public IPv4 DNS link for both of your EC2 instances to access them through a web browser. To generate two Elastic IPs, begin by navigating to your EC2 console on AWS.
+
+- In the left hand menu, select Elastic IPs under Network & Security.
+- Click Allocate Elastic IP Address
+- Click Allocate
+- Repeat
+- Now you should see two Elastic IPs associated with your account.
+
+#### Subnet ID
+
+To find the Subnet ID of your availability zone (we are using us-east-1a), use the AWS CLI and enter this command.
+
+- `aws ec2 describe-subnets --region us-east-1`
+
+Note the SubnetID.
+
+#### Security Groups
+
+for tim
 
 #### RDS Instance
 
-#### SNS Instance
+For tim
 
+#### SNS Topic
+
+To create a new SNS Topic, begin by navigating to the Simple Notification Service Dashboard on AWS. 
+
+- In the left hand menu, select Topics.
+- Click Create Topic.
+- Select Standard Type.
+- Give the topic a name. This name will be seen in notification emails.
+- Click create Topic and the bottom of the page.
+- Note the ARN of your new SNS Topic.
+
+Also add sns keys here.
+
+#### Installation
 
 To begin installing our application, you will first need to clone the repo.
 
@@ -134,14 +171,14 @@ Now you will need to enter details specific to your AWS account into the `.aws/c
 - Click on "Account details" and then AWS CLI: [Show]
 - Copy and paste the details found here to `StocktakeCloud/.aws/credentials`
 
-Now we need to set up a script to be run before launching the EC2-instances using Vagrant, for Windows users this file is a batch (`.bat`) and for Mac users this file is a shell script (`.sh`) found in the `StocktakeCloud/setup` directory 
+Now we need to set up a script to be run before launching the EC2-instances using Vagrant, Mac / Unix users this file is a shell script (`.sh`) found in the `StocktakeCloud/setup` directory, for Windows users this file is a batch (`.bat`) and replaces the `vagrant` command.
 
 - Enter your `aws_access_key_id`, `aws_secret_access_key` and the `aws_session_token` contained in your `.aws/credentials` file to the variables of the same name (but capitalised).
-- Enter your `sns_key` and `sns_secret` values pertaining to your SNS instance
-- Enter the `keypair_name` and `private_key_path` associated with your AWS account
-- Enter the elastic IP's used for both EC2 instances to their respective variables
+- Enter your `sns_key` and `sns_secret` values pertaining to your SNS instance.
+- Enter the `keypair_name` and `private_key_path` that you downloaded previously.
+- Enter the two Elastic IPs you created.
 - Enter the security group id used for which the EC2 instances and the RDS are setup with
-- Enter the Subnet ID's used for both EC2 instances
+- Enter your Subnet ID
 
 #### RDS Database Initialisation
 
@@ -174,6 +211,6 @@ To use the application as an admin, visit [192.168.2.11](http://192.168.2.11) in
 
 ### Destroying VMs
 
-After making changes to the source code you might want to restart a specific rather than all three VMs to test your changes. To do so, use the following commands: 
+After making changes to the source code you might want to restart a specific instance rather than both VMs to test your changes. To do so, use the following commands: 
 - `vagrant destroy [name]`
 - `vagrant up [name]`
