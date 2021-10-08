@@ -151,7 +151,22 @@ To create a new SNS Topic, begin by navigating to the Simple Notification Servic
 - Click create Topic and the bottom of the page.
 - Note the ARN of your new SNS Topic.
 
-If you want to use your student account credentials to access the SNS Topic from your EC2 Instance, you can add your KE
+To use account credentials to access the SNS Topic from your EC2 Instance, you must create a credentials file at /.aws/credentials on both EC2 instances. This is done in our provisioning script. If you want to use your student account credentials, you must also add the session token along with the key ID and key secret. We chose to create a new personal account and generate a new IAM user with SNS Admin permissions to avoid the one-hour time limit. To generate new user tokens, first create a personal aws account for free and navigate to the IAM Console.
+
+- In the left hand menu, select Users under Access Management.
+- Select Add Users
+- Give your new user a username, and select access key for credential type.
+- Click Next: Permissions
+- Select Attach exisiting policies directly
+- Search for AmazonSNSFullAccess and choose that policy.
+- Click Next: Tags
+- Click Next: Review
+- Click Create User
+- Note the Key ID and Key Secret of your new IAM user. 
+
+To add your session token manually, ssh into both instances by using `vagrant ssh <name>`, then run these two commands:
+- `sudo echo $'\n' >> /.aws/credentials`
+- `sudo echo "aws_access_key_id=<YOUR SESSION TOKEN HERE>" >> /.aws/credentials`
 
 #### Installation
 
@@ -163,7 +178,6 @@ Once you have successfully cloned the repo, cd into the repository.
 
 - `cd StocktakeCloud`
 
-
 Now you will need to enter details specific to your AWS account into the `.aws/credentials file`. For AWS educate accounts:
 - Sign in to your educate account here https://www.awseducate.com/signin/SiteLogin
 - Navigate to the "My Classrooms" tab located in the top right corner
@@ -174,11 +188,11 @@ Now you will need to enter details specific to your AWS account into the `.aws/c
 Now we need to set up a script to be run before launching the EC2-instances using Vagrant, Mac / Unix users this file is a shell script (`.sh`) found in the `StocktakeCloud/setup` directory, for Windows users this file is a batch (`.bat`) and replaces the `vagrant` command.
 
 - Enter your `aws_access_key_id`, `aws_secret_access_key` and the `aws_session_token` contained in your `.aws/credentials` file to the variables of the same name (but capitalised).
-- Enter your `sns_key` and `sns_secret` values pertaining to your SNS instance.
+- Enter your `sns_key` and `sns_secret` values from to your new IAM user with SNSFullAccess, or use your student details again and add your session token manually.
 - Enter the `keypair_name` and `private_key_path` that you downloaded previously.
 - Enter the two Elastic IPs you created.
-- Enter the security group id used for which the EC2 instances and the RDS are setup with
-- Enter your Subnet ID
+- Enter the security group id used for which the EC2 instances and the RDS are setup with.
+- Enter your Subnet ID.
 
 #### RDS Database Initialisation
 
