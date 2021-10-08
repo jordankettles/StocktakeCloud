@@ -151,7 +151,7 @@ To create a new SNS Topic, begin by navigating to the Simple Notification Servic
 - Click create Topic and the bottom of the page.
 - Note the ARN of your new SNS Topic.
 
-Also add sns keys here.
+If you want to use your student account credentials to access the SNS Topic from your EC2 Instance, you can add your KE
 
 #### Installation
 
